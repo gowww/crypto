@@ -1,8 +1,6 @@
 package encrypt
 
-import (
-	"testing"
-)
+import "testing"
 
 var (
 	testEncrypterKey       = "secret-key-secret-key-secret-key"

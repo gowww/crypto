@@ -1,6 +1,8 @@
 package encrypt
 
-import "testing"
+import (
+	"testing"
+)
 
 var (
 	testEncrypterKey       = "secret-key-secret-key-secret-key"
@@ -38,7 +40,25 @@ func TestEncrypterString(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if testEncrypterPlaintext != string(s) {
+	if testEncrypterPlaintext != s {
 		t.Errorf("encode/decode string: want %s, got %s", testEncrypterPlaintext, s)
+	}
+}
+
+func TestBase64Encrypter(t *testing.T) {
+	e, err := New(testEncrypterKey)
+	if err != nil {
+		panic(err)
+	}
+	s, err := e.EncryptBase64(testEncrypterPlaintext)
+	if err != nil {
+		panic(err)
+	}
+	s, err = e.DecryptBase64(s)
+	if err != nil {
+		panic(err)
+	}
+	if testEncrypterPlaintext != s {
+		t.Errorf("encode/decode base64: want %s, got %s", testEncrypterPlaintext, s)
 	}
 }

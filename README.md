@@ -18,20 +18,20 @@ Package [crypto](https://godoc.org/github.com/gowww/crypto) provides encryption 
 
 ## Usage
 
-Use [NewEncoder](https://godoc.org/github.com/gowww/crypto#NewEncoder) with a 32 bytes long secret key to make a new encoder:
+Use [NewEncrypter](https://godoc.org/github.com/gowww/crypto#NewEncrypter) with a 32 bytes long secret key to make a new [Encrypter](https://godoc.org/github.com/gowww/crypto#Encrypter):
 
 ```Go
-encoder, _ := crypto.NewEncoder("secret-key-secret-key-secret-key")
+encrypter, _ := crypto.NewEncrypter([]byte("secret-key-secret-key-secret-key"))
 ```
 
-Use [Encoder.Encrypt](https://godoc.org/github.com/gowww/crypto#Encoder.Encrypt) or [Encoder.EncryptString](https://godoc.org/github.com/gowww/crypto#Encoder.EncryptString) to encrypt a value:
+Use [Encrypter.Encrypt](https://godoc.org/github.com/gowww/crypto#Encrypter.Encrypt) or [Encrypter.EncryptBase64](https://godoc.org/github.com/gowww/crypto#Encrypter.EncryptBase64) to encrypt a value:
 
 ```Go
-encryptedData, _ := encoder.EncryptString("data to encrypt")
+encryptedData, _ := encrypter.Encrypt([]byte("data to encrypt"))
 ```
 
-Use [Encoder.Decrypt](https://godoc.org/github.com/gowww/crypto#Encoder.Decrypt) or [Encoder.DecryptString](https://godoc.org/github.com/gowww/crypto#Encoder.DecryptString) to decrypt a value:
+Use [Encrypter.Decrypt](https://godoc.org/github.com/gowww/crypto#Encrypter.Decrypt) or [Encrypter.DecryptBase64](https://godoc.org/github.com/gowww/crypto#Encrypter.DecryptBase64) to decrypt a value:
 
 ```Go
-decryptedData, _ := encoder.DecryptString("data to encrypt")
+decryptedData, _ := encrypter.Decrypt(encryptedData)
 ```

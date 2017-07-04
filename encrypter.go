@@ -14,8 +14,8 @@ import (
 	"io/ioutil"
 )
 
-// An Encoder provides encryption and hashing methods.
-type Encoder interface {
+// An Encrypter provides encryption and hashing methods.
+type Encrypter interface {
 	Encrypt([]byte) ([]byte, error)
 	EncryptBase64([]byte) ([]byte, error)
 	Decrypt([]byte) ([]byte, error)
@@ -23,9 +23,9 @@ type Encoder interface {
 	HashHS256([]byte) ([]byte, error)
 }
 
-// NewEncrypter returns a new AES-128 encoder for secret key.
+// NewEncrypter returns a new AES-128 encrypter for secret key.
 // The key must be 32 bytes long.
-func NewEncrypter(key []byte) (Encoder, error) {
+func NewEncrypter(key []byte) (Encrypter, error) {
 	if len(key) != 32 {
 		panic("encrypt: encrypter key must be 32 bytes long")
 	}
@@ -37,19 +37,19 @@ func NewEncrypter(key []byte) (Encoder, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &encoder{
+	return &encrypter{
 		key:  key,
 		aead: gcm,
 	}, nil
 }
 
-type encoder struct {
+type encrypter struct {
 	key  []byte
 	aead cipher.AEAD
 }
 
 // Encrypt encrypts a plain text.
-func (e *encoder) Encrypt(plaintext []byte) ([]byte, error) {
+func (e *encrypter) Encrypt(plaintext []byte) ([]byte, error) {
 	nonce := make([]byte, e.aead.NonceSize())
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (e *encoder) Encrypt(plaintext []byte) ([]byte, error) {
 }
 
 // EncryptBase64 encrypts a plain text and encodes it in base64.
-func (e *encoder) EncryptBase64(plaintext []byte) ([]byte, error) {
+func (e *encrypter) EncryptBase64(plaintext []byte) ([]byte, error) {
 	b, err := e.Encrypt(plaintext)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (e *encoder) EncryptBase64(plaintext []byte) ([]byte, error) {
 }
 
 // Decrypt decrypts a ciphered text.
-func (e *encoder) Decrypt(ciphertext []byte) ([]byte, error) {
+func (e *encrypter) Decrypt(ciphertext []byte) ([]byte, error) {
 	nonceSize := e.aead.NonceSize()
 	if len(ciphertext) < nonceSize {
 		return nil, errors.New("encrypt: ciphertext too short")
@@ -84,7 +84,7 @@ func (e *encoder) Decrypt(ciphertext []byte) ([]byte, error) {
 }
 
 // DecryptBase64 decodes a base64 ciphered text and decrypts it.
-func (e *encoder) DecryptBase64(ciphertext []byte) ([]byte, error) {
+func (e *encrypter) DecryptBase64(ciphertext []byte) ([]byte, error) {
 	b, err := ioutil.ReadAll(base64.NewDecoder(base64.StdEncoding, bytes.NewReader(ciphertext)))
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (e *encoder) DecryptBase64(ciphertext []byte) ([]byte, error) {
 }
 
 // HashHS256 returns the HMAC with SHA256 of a plain text.
-func (e *encoder) HashHS256(plaintext []byte) ([]byte, error) {
+func (e *encrypter) HashHS256(plaintext []byte) ([]byte, error) {
 	h := hmac.New(sha256.New, e.key)
 	_, err := h.Write(plaintext)
 	if err != nil {

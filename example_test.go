@@ -1,14 +1,16 @@
-package encrypt_test
+package crypto_test
 
 import (
+	"bytes"
 	"fmt"
 
-	"github.com/gowww/encrypt"
+	"github.com/gowww/crypto"
 )
 
-func Example() {
-	encrypter, _ := encrypt.New("secret-key-secret-key-secret-key")
-	data, _ := encrypter.EncryptString("data to encrypt")
-	data, _ = encrypter.DecryptString(data)
-	fmt.Println(data)
+func ExampleNewEncrypter() {
+	data := []byte("data to encrypt")
+	encrypter, _ := crypto.NewEncrypter([]byte("secret-key-secret-key-secret-key"))
+	encData, _ := encrypter.Encrypt(data)
+	data, _ = encrypter.Decrypt(encData)
+	fmt.Println(bytes.Equal(data, encData))
 }

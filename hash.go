@@ -11,7 +11,7 @@ import (
 func HashMD5(src io.Reader) (string, error) {
 	h := md5.New()
 	if _, err := io.Copy(h, src); err != nil {
-		return "", nil
+		return "", err
 	}
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }
